@@ -1,4 +1,4 @@
-package Movie.Menu;
+package com.movie.Menu;
 
 public interface Menu {
   void print();

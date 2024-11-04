@@ -1,4 +1,4 @@
-package Movie;
+package com.movie;
 
 /*
 * ---------------------------------------------------
@@ -56,8 +56,8 @@ package Movie;
 * */
 
 
-import Movie.Menu.Menu;
-import Movie.Menu.MenuManager;
+import com.movie.Menu.Menu;
+import com.movie.Menu.MenuManager;
 
 import java.util.Scanner;
 

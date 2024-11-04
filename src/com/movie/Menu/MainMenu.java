@@ -1,4 +1,4 @@
-package Movie.Menu;
+package com.movie.Menu;
 
 class MainMenu implements Menu {
   @Override

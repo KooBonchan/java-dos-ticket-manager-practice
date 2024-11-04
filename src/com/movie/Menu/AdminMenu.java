@@ -1,4 +1,4 @@
-package Movie.Menu;
+package com.movie.Menu;
 
 class AdminMenu implements Menu{
   static boolean verifyPassword(String password){

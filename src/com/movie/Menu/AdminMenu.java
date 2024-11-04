@@ -1,6 +1,8 @@
 package com.movie.Menu;
 
-class AdminMenu implements Menu{
+import com.movie.ReservationService;
+
+class AdminMenu extends AbstractMenu{
   static boolean verifyPassword(String password){
     return password != null && password.equals(
       "aprieta" // hardcoded string!!! vulnerable
@@ -18,14 +20,19 @@ class AdminMenu implements Menu{
   }
 
   @Override
-  public void execute(String command) {
+  public void execute() {
     //TODO
-    System.out.println(command);
+    String command;
+    do{
+      command= scanner.nextLine().strip();
+    }while(command.isEmpty());
+
     switch(command){
       case "1":
 
         break;
       case "2":
+        ReservationService.printAll();
         break;
       case "3":
         break;

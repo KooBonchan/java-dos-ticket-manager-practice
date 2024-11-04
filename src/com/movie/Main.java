@@ -68,12 +68,7 @@ public class Main {
       if(MenuManager.isEnd()) break;
       Menu current = MenuManager.getCurrent();
       current.print();
-
-      String command;
-      do{
-        command = scanner.nextLine();
-      }while(command.isBlank());
-      current.execute(command);
+      current.execute();
     }
     System.out.println("Program Halts...");
   }

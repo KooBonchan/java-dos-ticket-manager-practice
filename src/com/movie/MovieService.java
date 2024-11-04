@@ -39,7 +39,7 @@ public class MovieService {
   }
 
   public static Movie readMovie(int key) throws NoSuchElementException {
-    String sql = "READ title, genre, start_date, end_date " +
+    String sql = "SELECT title, genre, start_date, end_date " +
       "FROM movie " +
       "WHERE id = ? ";
 
@@ -67,7 +67,7 @@ public class MovieService {
   }
 
   public static List<Movie> readAll(){
-    String sql = "READ id, title, genre, start_date, end_date " +
+    String sql = "SELECT id, title, genre, start_date, end_date " +
       "FROM movie ";
 
     List<Movie> movies = new ArrayList<>();

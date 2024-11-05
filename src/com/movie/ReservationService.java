@@ -58,7 +58,7 @@ public class ReservationService {
     }
   }
 
-  public static void readReservation(long id){
+  public static Reservation readReservation(long id){
     String sql = "SELECT id, title, seat_row, seat_col, reserve_date " +
       "FROM reservation_list " +
       "WHERE id = ?";
@@ -69,14 +69,14 @@ public class ReservationService {
       preparedStatement.setLong(1, id);
       try(ResultSet resultSet = preparedStatement.executeQuery()){
         if(resultSet.next()){
-          Reservation reservation = new Reservation.ReservationBuilder()
+          return new Reservation.ReservationBuilder()
             .id(resultSet.getLong("id"))
             .movieTitle(resultSet.getString("title"))
             .row(resultSet.getInt("seat_row"))
             .col(resultSet.getInt("seat_col"))
             .reserveDate(resultSet.getDate("reserve_date"))
             .build();
-        }
+        } else return null;
       }
 
     } catch (SQLException e) {
@@ -111,7 +111,7 @@ public class ReservationService {
     }
   }
 
-  public static boolean verifySeat(long id, int row, int col){
+  public static boolean verifySeat(long movieID, int row, int col){
     String sql = "SELECT id " +
       "FROM reservation " +
       "WHERE movie_id = (SELECT movie_id FROM reservation WHERE id = ?) " +
@@ -120,7 +120,7 @@ public class ReservationService {
     try(Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql)
     ) {
-      preparedStatement.setLong(1,id);
+      preparedStatement.setLong(1,movieID);
       preparedStatement.setInt(2,row);
       preparedStatement.setInt(3,col);
 
@@ -160,7 +160,7 @@ public class ReservationService {
     }
   }
 
-  public static void deleteReservation(long id){
+  public static int deleteReservation(long id){
     String sql = "DELETE from reservation " +
       "WHERE id = ?";
     try(Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
@@ -173,5 +173,6 @@ public class ReservationService {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+    return 0;
   }
 }

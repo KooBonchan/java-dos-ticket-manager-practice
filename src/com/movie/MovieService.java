@@ -100,7 +100,9 @@ public class MovieService {
         PreparedStatement preparedStatement = connection.prepareStatement(sql)
     ) {
       preparedStatement.setInt(1, key);
-      preparedStatement.executeUpdate();
+      int rows = preparedStatement.executeUpdate();
+      if(rows == 0) System.out.println("No data was deleted. Reload page.");
+      else System.out.println("Deleted movie. Wish to see you again.");
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

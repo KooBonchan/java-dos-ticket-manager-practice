@@ -29,11 +29,11 @@ public class Movie {
       this.name = name;
     }
     static Genre fromString(String input){
-      return switch(input){
-        case "Fantasy" -> Fantasy;
-        case "Horror" -> Horror;
-        case "Romance" -> Romance;
-        case "Bass" -> Bass;
+      return switch(input.toLowerCase()){
+        case "fantasy" -> Fantasy;
+        case "horror" -> Horror;
+        case "romance" -> Romance;
+        case "bass" -> Bass;
         default -> null;
       };
     }
@@ -47,8 +47,8 @@ public class Movie {
   private int key;
   private String title;
   private Genre genre;
-  Date startDate;
-  Date endDate;
+  private Date startDate;
+  private Date endDate;
 
   public String getGenre() {
     return genre.toString();
@@ -61,6 +61,7 @@ public class Movie {
     this.startDate = startDate;
     this.endDate = endDate;
   }
+
   public static Optional<Movie> create(
     int key, String title, String genre, Date startDate, Date endDate
   ){

@@ -5,7 +5,6 @@ import com.movie.MovieService;
 import com.movie.Reservation;
 import com.movie.ReservationService;
 
-import java.util.Date;
 import java.util.List;
 
 class MainMenu extends AbstractMenu {
@@ -59,12 +58,9 @@ class MainMenu extends AbstractMenu {
           }else{
             System.out.println("Reservation Completed");
           }
-
-          // it has internal vulnerabilities if concurrent
+          // it has internal vulnerabilities if concurrent main menu
           // Since we check reserved at local not from database, it might make some error.
           // should be handled at this scope, something like transaction to check seat and insert.
-
-
         }catch(NumberFormatException e){
           System.out.println("Wrong command");
         }catch(IndexOutOfBoundsException e){
@@ -72,6 +68,41 @@ class MainMenu extends AbstractMenu {
         }
         break;
       case "2":
+        System.out.println("CHECK YOUR RESERVATION");
+        System.out.print("Reservation ID: ");
+        try{
+          long id = scanner.nextLong();
+          Reservation reservation = ReservationService.readReservation(id);
+          if(reservation == null){
+            System.out.println("No reservation found with given ID");
+            return;
+          }
+          System.out.println(reservation.toListEntry());
+          System.out.println("Enter 1 to modify your entry");
+          System.out.println("Enter other to go back main menu");
+          while(true){
+            String additionalCommand;
+            do {
+              additionalCommand = scanner.nextLine().strip();
+            } while (additionalCommand.isEmpty());
+            if( ! additionalCommand.equals("1")) break;
+            //TODO feature
+            // show seat state
+            System.out.print("# of row: ");
+            int row = scanner.nextInt() - 1;
+            System.out.print("# of col: ");
+            int col = scanner.nextInt() - 1;
+            try{
+              ReservationService.updateReservation(reservation, row, col);
+            } catch (RuntimeException e){
+              System.out.println("That seat is already reserved");
+              continue;
+            }
+            break;
+          }
+        }catch (NumberFormatException e){
+          System.out.println("No reservation found with given ID ");
+        }
         break;
       case "3":
         System.out.println("RESERVATION DELETE");

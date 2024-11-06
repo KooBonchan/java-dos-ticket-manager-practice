@@ -1,47 +1,61 @@
-use kbc;
-drop view if exists reservation_list;
-drop table if exists reservation;
-drop table if exists movie;
+USE kbc;
 
+DROP VIEW IF EXISTS reservation_list;
 
-create table movie (
-	id integer not null,
-    title varchar(20) not null,
-    genre char(10) not null,
-    start_date date null,
-    end_date date null,
-    constraint pk_movie primary key (id)
+DROP TABLE IF EXISTS reservation;
+
+DROP TABLE IF EXISTS movie;
+
+CREATE TABLE movie (
+  id integer NOT NULL,
+    title varchar(20) NOT NULL,
+    genre char(10) NOT NULL,
+    start_date date NULL,
+    end_date date NULL,
+    CONSTRAINT pk_movie PRIMARY KEY (id)
 );
 
-create table reservation (
-	id bigint not null,
-    movie_id integer not null,
-    seat_row integer not null,
-    seat_col integer not null,
-    reserve_timestamp Timestamp not null default current_timestamp,
-    constraint pk_reservation primary key (id),
-    constraint fk_reservation_movie
-		foreign key (movie_id)
-        references movie(id)
+CREATE TABLE reservation (
+  id bigint NOT NULL,
+    movie_id integer NOT NULL,
+    seat_row integer NOT NULL,
+    seat_col integer NOT NULL,
+    reserve_timestamp Timestamp NOT NULL DEFAULT current_timestamp,
+    CONSTRAINT pk_reservation PRIMARY KEY (id),
+    CONSTRAINT fk_reservation_movie
+    FOREIGN KEY (movie_id)
+        REFERENCES movie(id)
 );
 
-create index idx_movie_title on movie(title);
-create index idx_movie_end_date on movie(end_date);
-create index idx_rsv_date on reservation(reserve_date);
+CREATE INDEX idx_movie_title ON
+movie(title);
 
-create view reservation_list
-as
-select r.id, m.title, r.seat_row, r.seat_col, r.reserve_timestamp
-from reservation r
-inner join
-movie as m
-on m.id = r.movie_id;
+CREATE INDEX idx_movie_end_date ON
+movie(end_date);
+
+CREATE INDEX idx_rsv_timestamp ON
+reservation(reserve_timestamp);
+
+CREATE VIEW reservation_list
+AS
+SELECT
+  r.id,
+  m.title,
+  r.seat_row,
+  r.seat_col,
+  r.reserve_timestamp
+FROM
+  reservation r
+INNER JOIN
+movie AS m
+ON
+  m.id = r.movie_id;
 
 
---  ---------
-insert into movie
+-- -----------
+INSERT INTO movie
 (id, title, genre)
-values
+VALUES
 (1626123456, 'Avengers', 'Fantasy'),
 (1627234567, 'Conjuring', 'Horror'),
 (1626654321, 'Love Actually', 'Romance'),
@@ -49,11 +63,12 @@ values
 (1627175746, '7T\'s', 'Bass'),
 (1627175983, 'Stomping Ground', 'Bass');
 
-insert into reservation
+INSERT INTO reservation
 (id, movie_id, seat_row, seat_col, reserve_timestamp)
-values
+VALUES
 (33011317445647, 1627175707, 4, 7, current_timestamp),
 (33011319245647, 1627175983, 2, 5, current_date);
 
-select * from movie;
-select * from reservation_list;
+SELECT * FROM movie;
+
+SELECT * FROM reservation_list;

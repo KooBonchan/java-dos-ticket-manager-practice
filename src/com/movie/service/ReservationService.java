@@ -1,12 +1,16 @@
-package com.movie;
+package com.movie.service;
 
 import com.movie.database.DatabaseConnectionPool;
+import com.movie.model.Movie;
+import com.movie.model.Reservation;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /*
 Logics for sql
@@ -33,11 +37,12 @@ public class ReservationService {
     }
   }
 
-  public static void printAll(){
+  public static List<Reservation> readAll(){
     // For Admin usage.
     // Add User feature?
     String sql = "SELECT id, title, seat_row, seat_col, reserve_date " +
       "FROM reservation_list";
+    List<Reservation> reservations = new ArrayList<>();
     try(
       Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -51,7 +56,7 @@ public class ReservationService {
           .col(resultSet.getInt("seat_col"))
           .reserveDate(resultSet.getDate("reserve_date"))
           .build();
-        System.out.println(reservation.toListEntry());
+        reservations.add(reservation);
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);

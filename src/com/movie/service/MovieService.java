@@ -1,6 +1,7 @@
-package com.movie;
+package com.movie.service;
 
 import com.movie.database.DatabaseConnectionPool;
+import com.movie.model.Movie;
 
 import java.sql.*;
 import java.util.ArrayList;

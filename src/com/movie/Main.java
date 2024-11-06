@@ -56,9 +56,6 @@ package com.movie;
 * */
 
 
-import com.movie.Menu.Menu;
-import com.movie.Menu.MenuManager;
-
 import java.util.Scanner;
 
 public class Main {
@@ -66,9 +63,7 @@ public class Main {
     Scanner scanner = new Scanner(System.in);
     while(true){
       if(MenuManager.isEnd()) break;
-      Menu current = MenuManager.getCurrent();
-      current.print();
-      current.execute();
+      MenuManager.execute();
     }
     System.out.println("Program Halts...");
   }

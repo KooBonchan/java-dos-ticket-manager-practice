@@ -1,4 +1,4 @@
-package com.movie;
+package com.movie.model;
 
 
 import lombok.Builder;

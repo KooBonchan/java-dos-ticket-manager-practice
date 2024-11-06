@@ -1,9 +1,10 @@
-package com.movie.Menu;
+package com.movie.menu;
 
-import com.movie.Movie;
-import com.movie.MovieService;
-import com.movie.Reservation;
-import com.movie.ReservationService;
+import com.movie.MenuManager;
+import com.movie.model.Movie;
+import com.movie.service.MovieService;
+import com.movie.model.Reservation;
+import com.movie.service.ReservationService;
 
 import java.util.List;
 

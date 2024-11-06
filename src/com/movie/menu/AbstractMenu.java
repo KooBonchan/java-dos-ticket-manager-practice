@@ -1,4 +1,4 @@
-package com.movie.Menu;
+package com.movie.menu;
 
 import java.util.Scanner;
 

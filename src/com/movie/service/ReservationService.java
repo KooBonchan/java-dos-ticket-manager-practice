@@ -19,19 +19,23 @@ no exception handling this scope.
  */
 
 public class ReservationService {
-  public static boolean createReservation(Movie movie, int row, int col){
-    String sql = "INSERT INTO reservation (id, movie_id, seat_row, seat_col, reserve_date) VALUES (?, ?, ?, ?, ?)";
+  public static long createReservation(Movie movie, int row, int col){
+    String sql = "INSERT INTO reservation (id, movie_id, seat_row, seat_col, reserve_timestamp) VALUES (?, ?, ?, ?, ?)";
     try(
       Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      PreparedStatement preparedStatement = connection.prepareStatement(sql)
     ) {
-      preparedStatement.setLong(1, (new Date()).getTime() - row << 3 + col << 5);
-      preparedStatement.setInt(2, movie.getKey());
+      long key = (new Date()).getTime() - row << 3 + col << 5;
+      // key generated here - should return here | separate logic.
+      preparedStatement.setLong(1, key);
+      preparedStatement.setInt(2, movie.getId());
       preparedStatement.setInt(3, row);
       preparedStatement.setInt(4, col);
-      preparedStatement.setDate(5, new java.sql.Date(new Date().getTime()));
+      preparedStatement.setTimestamp(5, new java.sql.Timestamp(new Date().getTime()));
       int i = preparedStatement.executeUpdate();
-      return i > 0;
+      if(i > 0) return key;
+      else return -1;
+
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -40,7 +44,7 @@ public class ReservationService {
   public static List<Reservation> readAll(){
     // For Admin usage.
     // Add User feature?
-    String sql = "SELECT id, title, seat_row, seat_col, reserve_date " +
+    String sql = "SELECT id, title, seat_row, seat_col, reserve_timestamp " +
       "FROM reservation_list";
     List<Reservation> reservations = new ArrayList<>();
     try(
@@ -49,22 +53,23 @@ public class ReservationService {
       ResultSet resultSet = preparedStatement.executeQuery()
       ){
       while(resultSet.next()){
-        Reservation reservation = new Reservation.ReservationBuilder()
-          .id(resultSet.getLong("id"))
-          .movieTitle(resultSet.getString("title"))
-          .row(resultSet.getInt("seat_row"))
-          .col(resultSet.getInt("seat_col"))
-          .reserveDate(resultSet.getDate("reserve_date"))
-          .build();
+        Reservation reservation = new Reservation(
+          resultSet.getLong("id"),
+          resultSet.getString("title"),
+          resultSet.getInt("seat_row"),
+          resultSet.getInt("seat_col"),
+          resultSet.getTimestamp("reserve_timestamp")
+        );
         reservations.add(reservation);
       }
+      return reservations;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
   }
 
   public static Reservation readReservation(long id){
-    String sql = "SELECT id, title, seat_row, seat_col, reserve_date " +
+    String sql = "SELECT id, title, seat_row, seat_col, reserve_timestamp " +
       "FROM reservation_list " +
       "WHERE id = ?";
 
@@ -74,13 +79,13 @@ public class ReservationService {
       preparedStatement.setLong(1, id);
       try(ResultSet resultSet = preparedStatement.executeQuery()){
         if(resultSet.next()){
-          return new Reservation.ReservationBuilder()
-            .id(resultSet.getLong("id"))
-            .movieTitle(resultSet.getString("title"))
-            .row(resultSet.getInt("seat_row"))
-            .col(resultSet.getInt("seat_col"))
-            .reserveDate(resultSet.getDate("reserve_date"))
-            .build();
+          return new Reservation(
+            resultSet.getLong("id"),
+            resultSet.getString("title"),
+            resultSet.getInt("seat_row"),
+            resultSet.getInt("seat_col"),
+            resultSet.getTimestamp("reserve_timestamp")
+          );
         } else return null;
       }
 
@@ -97,7 +102,7 @@ public class ReservationService {
     try(Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql)
     ) {
-      preparedStatement.setLong(1, movie.getKey());
+      preparedStatement.setLong(1, movie.getId());
 
       try(ResultSet resultSet = preparedStatement.executeQuery()){
         boolean[][] isReserved = new boolean[Reservation.MAX_ROW][Reservation.MAX_COL];
@@ -146,7 +151,7 @@ public class ReservationService {
     String sql = "UPDATE reservation " +
       "SET seat_ROW = ?," +
       "    seat_col = ?," +
-      "    reserve_date = current_date " +
+      "    reserve_timestamp = current_timestamp " +
       "WHERE id = ?";
 
     try(Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
@@ -157,7 +162,7 @@ public class ReservationService {
       preparedStatement.setLong(3, reservation.getId());
 
       preparedStatement.executeUpdate();
-      reservation.setReserveDate(new Date()); //local data and db data will mismatch.
+      reservation.setReserveTimestamp(new Date()); //local data and db data will mismatch.
       reservation.setRow(row);
       reservation.setCol(col);
     } catch (SQLException e) {

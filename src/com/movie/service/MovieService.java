@@ -10,16 +10,15 @@ import java.util.NoSuchElementException;
 
 public class MovieService {
   public static void createMovie(Movie movie){
-    String sql = "INSERT INTO movie (key, title, genre, start_date, end_date) " +
+    String sql = "INSERT INTO movie (id, title, genre, start_date, end_date) " +
       "VALUES (?, ?, ?, ?, ?)";
 
     try(Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql)
     ) {
-      preparedStatement.setInt(1, movie.getKey());
+      preparedStatement.setInt(1, movie.getId());
       preparedStatement.setString(2, movie.getTitle());
       preparedStatement.setString(3, movie.getGenre());
-
 
       if (movie.getStartDate() != null) {
         preparedStatement.setDate(4, new Date(movie.getStartDate().getTime()));
@@ -94,18 +93,51 @@ public class MovieService {
     return movies;
   }
 
-  public static void deleteMovie(int key) {
+  public static void updateMovie(Movie movie){
+    String sql = "UPDATE movie " +
+      "SET title=?, genre=?, start_date=?, end_date=? " +
+      "WHERE id=?";
+
+    try(Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql)
+    ) {
+      preparedStatement.setString(1, movie.getTitle());
+      preparedStatement.setString(2, movie.getGenre());
+
+
+      if (movie.getStartDate() != null) {
+        preparedStatement.setDate(3, new Date(movie.getStartDate().getTime()));
+      } else {
+        preparedStatement.setNull(3, Types.DATE);
+      }
+      if (movie.getEndDate() != null) {
+        preparedStatement.setDate(4, new Date(movie.getEndDate().getTime()));
+      } else {
+        preparedStatement.setNull(4, Types.DATE);
+      }
+      preparedStatement.setInt(5, movie.getId());
+
+      preparedStatement.executeUpdate();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static void deleteMovie(int id) {
     String sql = "DELETE FROM movie " +
       "WHERE id = ? ";
     try(Connection connection = DatabaseConnectionPool.getDataSource().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(sql)
     ) {
-      preparedStatement.setInt(1, key);
+      preparedStatement.setInt(1, id);
       int rows = preparedStatement.executeUpdate();
       if(rows == 0) System.out.println("No data was deleted. Reload page.");
       else System.out.println("Deleted movie. Wish to see you again.");
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+  }
+  public static void deleteMovie(Movie movie){
+    if(movie != null) deleteMovie(movie.getId());
   }
 }

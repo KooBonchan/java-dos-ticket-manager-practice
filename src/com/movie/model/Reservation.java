@@ -1,7 +1,6 @@
 package com.movie.model;
 
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,28 +21,27 @@ public class Reservation {
    * reserveDate date
    */
   private final long id;
-  private final String movieTitle;
+  private String movieTitle;
   @Setter
   private int row;
   @Setter
   private int col;
   @Setter
-  private Date reserveDate;
+  private Date reserveTimestamp;
 
-  @Builder
-  public Reservation(long id, String movieTitle, int row, int col, Date reserveDate) {
+  public Reservation(long id, String movieTitle, int row, int col, Date reserveTimestamp) {
     this.id = id;
     this.movieTitle = movieTitle;
     this.row = row;
     this.col = col;
-    this.reserveDate = reserveDate;
+    this.reserveTimestamp = reserveTimestamp;
   }
 
   public String toListEntry(){
-    return String.format("%-15d | %20s | %2d | %2d | %15s",
+    return String.format("%-19d | %20s | %2d | %2d | %15s",
       id, movieTitle, row, col,
-      new SimpleDateFormat("yyMMdd HH:mi")
-        .format(reserveDate)
+      new SimpleDateFormat("yyMMdd HH:mm")
+        .format(reserveTimestamp)
     );
   }
 

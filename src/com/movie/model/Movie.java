@@ -1,6 +1,7 @@
 package com.movie.model;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.Optional;
@@ -43,7 +44,8 @@ public class Movie {
     }
   }
 
-  private int key;
+  private int id;
+  @Setter
   private String title;
   private Genre genre;
   private Date startDate;
@@ -53,8 +55,14 @@ public class Movie {
     return genre.toString();
   }
 
-  private Movie(int key, String title, Genre genre, Date startDate, Date endDate) {
-    this.key = key;
+  public void trySetGenre(String rawGenre){
+    Genre genre = Genre.fromString(rawGenre);
+    if(genre != null) this.genre = genre;
+    else throw new IllegalArgumentException("No such genre");
+  }
+
+  private Movie(int id, String title, Genre genre, Date startDate, Date endDate) {
+    this.id = id;
     this.title = title;
     this.genre = genre;
     this.startDate = startDate;

@@ -1,8 +1,4 @@
-package com.movie;
-
-import com.movie.menu.AdminMenu;
-import com.movie.menu.MainMenu;
-import com.movie.menu.Menu;
+package com.movie.menu;
 
 import java.util.Stack;
 
@@ -27,33 +23,51 @@ public class MenuManager {
   * */
   protected static boolean toAdminMenu(String password){
     if(AdminMenu.verifyPassword(password)){
-      for(int i = 0; i < 100; i++){
-        System.out.println();
-      }
-      closeCurrentWindow();
+      AbstractMenu.cleanScreen();
+      while( ! nav.isEmpty()) nav.pop();
       nav.push(new AdminMenu());
       return true;
     }
     return false;
   }
   protected static boolean toMainMenu(){
-    closeCurrentWindow();
+    while( ! nav.isEmpty()) nav.pop();
     nav.push(new MainMenu());
+    return true;
+  }
+  protected static boolean navigateTo(Menu current, Menu next){
+    if((next instanceof AdminMenu) ||
+      (next instanceof MovieMenu && ! (current instanceof AdminMenu))
+    ){
+      //Admin only access verifier
+      System.out.println("Illegal access to Admin menu");
+      return false;
+    }
+    if(next instanceof MainMenu){
+      return toMainMenu();
+    }
+
+    if(next.getClass() == current.getClass()){
+      // refresh? check use cases.
+      nav.pop();
+    }
+    nav.push(next);
     return true;
   }
 
   protected static void closeCurrentWindow(){
     nav.pop();
   }
-  protected static void haltProgram(){
-    nav = new Stack<>();
+  protected static void haltProgram() {
+    nav = null;
+    AbstractMenu.scanner.close();
+    // ??? wierd dependency?
   }
   public static boolean isEnd(){
-    return nav.isEmpty();
+    return nav == null || nav.isEmpty();
   }
 
   public static void execute(){
-    nav.peek().print();
     nav.peek().execute();
   }
 }

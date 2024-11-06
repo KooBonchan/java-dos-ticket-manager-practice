@@ -1,11 +1,11 @@
 package com.movie.menu;
 
-import com.movie.MenuManager;
 import com.movie.model.Movie;
 import com.movie.service.MovieService;
 import com.movie.model.Reservation;
 import com.movie.service.ReservationService;
 
+import java.util.InputMismatchException;
 import java.util.List;
 
 class MainMenu extends AbstractMenu {
@@ -22,11 +22,9 @@ class MainMenu extends AbstractMenu {
 
   @Override
   public void execute() {
+    print();
     //TODO
-    String command;
-    do{
-      command= scanner.nextLine().strip();
-    }while(command.isEmpty());
+    String command = getCommand();
 
     switch(command){
       case "1":
@@ -45,6 +43,7 @@ class MainMenu extends AbstractMenu {
           boolean[][] isReserved =ReservationService.checkRemainingSeat(movie);
           Reservation.printAvailableSeats(isReserved);
 
+          System.out.println("Enter any non-number to exit reservation page.");
           System.out.print("# of row: ");
           int row = scanner.nextInt() - 1;
           System.out.print("# of col: ");
@@ -54,16 +53,17 @@ class MainMenu extends AbstractMenu {
             return;
           }
 
-          if(! ReservationService.createReservation(movie,row,col)){
+          long key = ReservationService.createReservation(movie,row,col);
+          if( key < 0){
             System.out.println("Reservation interrupted unexpectedly. Sorry");
           }else{
             System.out.println("Reservation Completed");
+            System.out.println("key is: " + key);
           }
           // it has internal vulnerabilities if concurrent main menu
           // Since we check reserved at local not from database, it might make some error.
           // should be handled at this scope, something like transaction to check seat and insert.
-        }catch(NumberFormatException e){
-          System.out.println("Wrong command");
+        }catch(InputMismatchException ignored){
         }catch(IndexOutOfBoundsException e){
           System.out.println("Input data out of range");
         }
@@ -80,12 +80,9 @@ class MainMenu extends AbstractMenu {
           }
           System.out.println(reservation.toListEntry());
           System.out.println("Enter 1 to modify your entry");
-          System.out.println("Enter other to go back main menu");
+          System.out.println("Enter other word to exit");
           while(true){
-            String additionalCommand;
-            do {
-              additionalCommand = scanner.nextLine().strip();
-            } while (additionalCommand.isEmpty());
+            String additionalCommand = getCommand();
             if( ! additionalCommand.equals("1")) break;
             //TODO feature
             // show seat state
@@ -101,7 +98,7 @@ class MainMenu extends AbstractMenu {
             }
             break;
           }
-        }catch (NumberFormatException e){
+        }catch (InputMismatchException e){
           System.out.println("No reservation found with given ID ");
         }
         break;
@@ -111,7 +108,7 @@ class MainMenu extends AbstractMenu {
         try{
           long id = scanner.nextLong();
           ReservationService.deleteReservation(id);
-        }catch (NumberFormatException e){
+        }catch (InputMismatchException e){
           System.out.println("Wrong ID Format");
         }
         break;

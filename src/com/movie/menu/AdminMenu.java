@@ -1,6 +1,5 @@
 package com.movie.menu;
 
-import com.movie.MenuManager;
 import com.movie.service.ReservationService;
 
 class AdminMenu extends AbstractMenu{
@@ -15,21 +14,20 @@ class AdminMenu extends AbstractMenu{
     System.out.println("""
       ADMINADMINADMINADMINADMINADMINADMINADMINADMINAD
       1. 영화관리 | 2. 예매확인 | 3.   홈으로 | 0.    종료
-      --------------type password to enter Admin menu
+      GWANLIZAGWANLIZAGWANLIZAGWANLIZAGWANLIZAGWANLIZ
       ADMINISTRATORADMINISTRATORADMINISTRATORADMINIST
       """);
   }
 
   @Override
   public void execute() {
-    String command;
-    do{
-      command= scanner.nextLine().strip();
-    }while(command.isEmpty());
+    print();
+    String command = getCommand();
 
     switch(command){
       case "1":
         // this will call MovieMenu
+        MenuManager.navigateTo(this,new MovieMenu());
         break;
       case "2":
         for(var reservation : ReservationService.readAll()){

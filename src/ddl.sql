@@ -18,7 +18,7 @@ create table reservation (
     movie_id integer not null,
     seat_row integer not null,
     seat_col integer not null,
-    reserve_date Date not null,
+    reserve_timestamp Timestamp not null default current_timestamp,
     constraint pk_reservation primary key (id),
     constraint fk_reservation_movie
 		foreign key (movie_id)
@@ -31,7 +31,7 @@ create index idx_rsv_date on reservation(reserve_date);
 
 create view reservation_list
 as
-select r.id, m.title, r.seat_row, r.seat_col, r.reserve_date
+select r.id, m.title, r.seat_row, r.seat_col, r.reserve_timestamp
 from reservation r
 inner join
 movie as m
@@ -50,8 +50,9 @@ values
 (1627175983, 'Stomping Ground', 'Bass');
 
 insert into reservation
+(id, movie_id, seat_row, seat_col, reserve_timestamp)
 values
-(33011317445647, 1627175707, 4, 7, current_date),
+(33011317445647, 1627175707, 4, 7, current_timestamp),
 (33011319245647, 1627175983, 2, 5, current_date);
 
 select * from movie;
